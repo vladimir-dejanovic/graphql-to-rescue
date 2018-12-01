@@ -22,6 +22,14 @@ type Talk {
     description: String
 }
 
+type Hello {
+    message: String
+}
+
+type Subscription {
+    say: Hello
+}
+
 union Person = Speaker | Attendee
 
 type Query {
@@ -34,4 +42,5 @@ type Query {
 
 schema {
     query: Query
+    subscription: Subscription
 }
