@@ -7,6 +7,7 @@ type Speaker {
     id: ID!
     name: String!
     twitter: String
+    talks: [Talk]
 }
 
 type Talk {
@@ -17,7 +18,7 @@ type Talk {
 }
 
 type Query {
-    allTalks: [Talk]
+    allTalks(size: Int): [Talk]
     allSpeakers: [Speaker]
     allAttendees: [Attendee]
 }

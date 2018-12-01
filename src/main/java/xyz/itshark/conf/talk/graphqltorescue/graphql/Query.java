@@ -24,8 +24,14 @@ public class Query implements GraphQLQueryResolver {
     @Autowired
     AttendeeService attendeeService;
 
-    public List<Talk> allTalks() {
-        return talkService.findAll();
+    public List<Talk> allTalks(Integer size) {
+        List<Talk> result = talkService.findAll();
+
+        if(size != null) {
+            return result.subList(0,size);
+        } else {
+            return result;
+        }
     }
 
 
