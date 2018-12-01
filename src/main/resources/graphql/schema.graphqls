@@ -1,9 +1,14 @@
-type Attendee {
+interface Human {
+    name: String!
+}
+
+
+type Attendee implements Human {
     id: ID!
     name: String!
 }
 
-type Speaker {
+type Speaker implements Human {
     id: ID!
     name: String!
     twitter: String
@@ -21,6 +26,7 @@ type Query {
     allTalks(size: Int): [Talk]
     allSpeakers: [Speaker]
     allAttendees: [Attendee]
+    allHumans: [Human]
 }
 
 schema {

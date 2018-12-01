@@ -43,4 +43,13 @@ public class Query implements GraphQLQueryResolver {
         return attendeeService.findAll();
     }
 
+    public List<Object> allHumans() {
+        List ret = attendeeService.findAll();
+        List<Speaker> speakers = speakerService.findAll();
+
+        ret.addAll(speakers);
+
+        return ret;
+    }
+
 }
