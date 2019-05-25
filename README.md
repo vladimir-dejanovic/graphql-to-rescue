@@ -468,3 +468,108 @@ query {
 ```
 
 End result of code can be found in **graphql-0.4** directory.
+
+## Issue 8 - Status Code/Error
+
+Solved by specification
+
+## Issue 9 - Streaming data
+
+### update GraphQL Schema
+
+```
+type Score {
+    talk: String
+    score: Int
+}
+
+type Subscription {
+    scoreForTalk(talk: String): Score
+}
+
+schema {
+    query: Query
+    subscription: Subscription
+}
+```
+
+### Update Java Code
+
+update pom.xml with new dependency
+
+```
+    <dependency>
+      <groupId>io.reactivex.rxjava2</groupId>
+      <artifactId>rxjava</artifactId>
+      <version>2.2.3</version>
+    </dependency>
+```
+
+Add pojo for Score
+
+```
+import lombok.Data;
+
+@Data
+public class Score {
+
+    private String talk;
+    private int score;
+}
+```
+
+Add subscription resolver
+
+```
+package xyz.itshark.conf.talk.graphqltorescue.graphql;
+
+import com.coxautodev.graphql.tools.GraphQLSubscriptionResolver;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
+import io.reactivex.observables.ConnectableObservable;
+import org.reactivestreams.Publisher;
+import org.springframework.stereotype.Component;
+import xyz.itshark.conf.talk.graphqltorescue.pojo.Score;
+
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+@Component
+public class Subscription implements GraphQLSubscriptionResolver {
+
+
+    public Publisher<Score> scoreForTalk(String talk) {
+        Observable<Score> observable = Observable.create( e -> {
+            ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+            executorService.scheduleAtFixedRate(() -> {
+                Score score = new Score();
+                score.setTalk(talk);
+                score.setScore((int) Math.floor(Math.random()*10));
+                e.onNext(score);
+            }, 0, 2, TimeUnit.SECONDS);
+        });
+
+        ConnectableObservable connectableObservable = observable.share().publish();
+        connectableObservable.connect();
+        return connectableObservable.toFlowable(BackpressureStrategy.BUFFER);
+    }
+
+}
+```
+
+### Test Solution
+
+hit http://localhost:8080/graphiql
+
+```
+subscription {
+  scoreForTalk(talk: "my talk") {
+    talk
+    score
+  }
+}
+```
+
+End result of code can be found in **graphql-0.5** directory.
