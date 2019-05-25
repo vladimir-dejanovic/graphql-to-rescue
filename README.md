@@ -1,6 +1,6 @@
-# What limitations and problems of REST API can be solved by GraphQLQueryResolver
+# GraphQL to rescue
 
-this is code example for my talk *What limitations and problems of REST API can be solved by GraphQLQueryResolver*
+this is code example for my talk *What limitations and problems of REST API can be solved by GraphQL*
 
 ## Issue 1 - No spec &  documentation not up to date
 
