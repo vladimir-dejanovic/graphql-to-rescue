@@ -1,0 +1,27 @@
+type Attendee {
+    id: ID!
+    name: String!
+}
+
+type Speaker {
+    id: ID!
+    name: String!
+    twitter: String
+}
+
+type Talk {
+    id: ID!
+    # this is comment for title
+    title: String!
+    description: String
+}
+
+type Query {
+    allTalks: [Talk]
+    allSpeakers: [Speaker]
+    allAttendees: [Attendee]
+}
+
+schema {
+    query: Query
+}
