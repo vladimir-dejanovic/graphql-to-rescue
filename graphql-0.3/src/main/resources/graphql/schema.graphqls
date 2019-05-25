@@ -1,0 +1,32 @@
+type Attendee {
+    id: ID!
+    name: String!
+}
+
+type Speaker {
+    id: ID!
+    name: String!
+    twitter: String
+    talks: [Talk]
+}
+
+type Talk {
+    id: ID!
+    # this is comment for title
+    title: String!
+    description: String
+}
+
+union Any = Speaker | Talk
+
+type Query {
+    allTalks: [Talk]
+    allSpeakers: [Speaker]
+    allAttendees: [Attendee]
+    allTalksForSpeaker(speakerId: Int) : [Talk]
+    allAny: [Any]
+}
+
+schema {
+    query: Query
+}

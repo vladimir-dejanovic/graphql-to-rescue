@@ -280,3 +280,93 @@ query {
   }
 }
 ```
+
+## Issue 6 - different type of data in same request
+
+### update GraphQL Schema
+
+```
+union Any = Speaker | Talk
+
+type Query {
+    allTalks: [Talk]
+    allSpeakers: [Speaker]
+    allAttendees: [Attendee]
+    allTalksForSpeaker(speakerId: Int) : [Talk]
+    allAny: [Any]
+}
+```
+
+### Update java
+
+```
+@Component
+public class Query implements GraphQLQueryResolver {
+
+....
+
+    public List<Object> allAny() {
+        List list = speakerService.findAll();
+        List list2 = talkService.findAll();
+
+        list.addAll(list2);
+
+        return list;
+    }
+
+}
+```
+
+### Test solution
+
+```
+query {
+  allAny {
+    ... on Speaker {
+      name
+    }
+    ... on Talk {
+      title
+    }
+  }
+}
+```
+
+we can also use fragments in query
+
+```
+query {
+  allAny {
+    ... on Speaker {
+      name
+    }
+    ...testFragment
+  }
+}
+
+
+fragment testFragment on Talk {
+  talk_title:title
+}
+```
+
+if we need info about type we can get it in this way
+
+```
+query {
+  allAny {
+    __typename
+    ... on Speaker {
+      name
+    }
+    ...testFragment
+  }
+}
+
+
+fragment testFragment on Talk {
+  talk_title:title
+}
+```
+
+End result of code can be found in **graphql-0.3** directory.
