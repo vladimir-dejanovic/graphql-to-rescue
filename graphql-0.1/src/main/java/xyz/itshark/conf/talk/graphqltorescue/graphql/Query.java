@@ -37,4 +37,8 @@ public class Query implements GraphQLQueryResolver {
         return attendeeService.findAll();
     }
 
+    public List<Talk> allTalksForSpeaker(Long speakerId) {
+        return talkService.findAllTalksBySpeakerId(speakerId);
+    }
+
 }

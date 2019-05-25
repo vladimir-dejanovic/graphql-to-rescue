@@ -20,6 +20,7 @@ type Query {
     allTalks: [Talk]
     allSpeakers: [Speaker]
     allAttendees: [Attendee]
+    allTalksForSpeaker(speakerId: Int) : [Talk]
 }
 
 schema {
