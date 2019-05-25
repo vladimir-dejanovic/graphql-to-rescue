@@ -2,6 +2,11 @@
 
 this is code example for my talk *What limitations and problems of REST API can be solved by GraphQL*
 
+## Environment on my machine :)
+
+- **Apache Maven 3.5.2**
+- **Java version: 11.0.2, vendor: AdoptOpenJDK**
+
 ## Issue 1 - No spec &  documentation not up to date
 
 Let us open code in init directory
@@ -370,3 +375,96 @@ fragment testFragment on Talk {
 ```
 
 End result of code can be found in **graphql-0.3** directory.
+
+## Issue 7 - sharing of similar data between resources
+
+### update GraphQL Schema
+
+```
+interface Human {
+    name: String!
+}
+
+type Attendee implements Human {
+    id: ID!
+    name: String!
+}
+
+type Speaker implements  Human {
+    id: ID!
+    name: String!
+    twitter: String
+    talks: [Talk]
+}
+
+type Query {
+    allTalks: [Talk]
+    allSpeakers: [Speaker]
+    allAttendees: [Attendee]
+    allTalksForSpeaker(speakerId: Int) : [Talk]
+    allAny: [Any]
+    allHumans: [Human]
+}
+
+```
+
+### Update Java
+
+We can add interface if we want to
+
+```
+package xyz.itshark.conf.talk.graphqltorescue.pojo;
+
+public interface Human {
+    public String getName();
+}
+```
+
+```
+public class Attendee implements Human{
+   ...
+}
+```
+
+```
+public class Speaker implements Human {
+   ...
+}
+```
+
+```
+@Component
+public class Query implements GraphQLQueryResolver {
+
+    ...
+
+    public  List<Human> allHumans() {
+        List list1 = speakerService.findAll();
+        List list2 = attendeeService.findAll();
+
+        list1.addAll(list2);
+
+        return list1;
+    }
+
+}
+```
+
+### Test solution
+
+```
+query {
+  allHumans {
+    __typename
+    name
+    ... on Speaker {
+      twitter
+    }
+    ... on Attendee {
+      id
+    }
+  }
+}
+```
+
+End result of code can be found in **graphql-0.4** directory.
