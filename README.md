@@ -186,4 +186,4 @@ query {
 - Schema is mandatory so it has to be present.
 - Schema is in the same time documentation, so it is also always present.
 
-End result of code can be found in graphql-0.1 directory.
+End result of code can be found in **graphql-0.1** directory.
