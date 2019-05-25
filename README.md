@@ -187,3 +187,96 @@ query {
 - Schema is in the same time documentation, so it is also always present.
 
 End result of code can be found in **graphql-0.1** directory.
+
+## Issue 2 - client & server not in sync
+
+In case of GraphQL this isn't the issue due to specification.
+On init connection client will get spec from server and will not event sent incorrect requests according to specification.
+
+## Issue 3 - Over fetching fetching
+
+Solved by default by GraphQL
+
+```
+query {
+  allTalks {
+    id
+    title
+  }
+}
+```
+
+## Issue 4 - Under fetching
+
+In case we want to show Speaker details and also details about speaker talks, we need to make multiple calls to backend or we need to add new entry point that would return this specific combination. With GraphQL we can solve this in an easy way.
+
+### Update graphql schema
+
+```
+type Speaker {
+    id: ID!
+    name: String!
+    twitter: String
+    talks: [Talk]
+}
+```
+
+### update java code
+
+Let us add new resolver
+
+```
+package xyz.itshark.conf.talk.graphqltorescue.graphql;
+
+import com.coxautodev.graphql.tools.GraphQLResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import xyz.itshark.conf.talk.graphqltorescue.pojo.Speaker;
+import xyz.itshark.conf.talk.graphqltorescue.pojo.Talk;
+import xyz.itshark.conf.talk.graphqltorescue.service.TalkService;
+
+import java.util.List;
+
+@Component
+public class SpeakerResolver implements GraphQLResolver<Speaker> {
+
+    @Autowired
+    TalkService talkService;
+
+    public List<Talk> talks(Speaker speaker) {
+        return talkService.findAllTalksBySpeaker(speaker);
+    }
+}
+```
+
+and now we can have query like
+
+```
+query {
+  allSpeakers {
+    name
+    talks {
+      title
+      description
+    }
+  }
+}
+```
+
+End result of code can be found in **graphql-0.2** directory.
+
+## Issue 5 - naming conventions
+
+Automatically solved by GraphQL
+
+```
+query {
+  speakers:allSpeakers {
+    speaker_name:name
+    talks {
+      title
+      desc:description
+    }
+  }
+}
+```
